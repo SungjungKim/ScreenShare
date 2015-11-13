@@ -24,7 +24,7 @@ if (config.ws.secured) { // HTTPS
     });
 }
 
-io.listen(server);
+io = io.listen(server);
 
 var usernames = {};
 var numUsers = 0;

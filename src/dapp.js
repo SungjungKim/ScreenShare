@@ -4,6 +4,7 @@ var fs = require('fs');
 var config = require('./js/config');
 var server;
 
+
 if (config.ws.secured) { // HTTPS
     var https = require('https');
     var options = {
@@ -28,14 +29,12 @@ var io = require('socket.io').listen(server, {
     origins: '*:*'
 });
 
-//io.set('transports', [
-//    'websockets',
-//    'jsonp-polling'
-//]);
 
 var channels = {};
 
 io.sockets.on('connection', function (socket) {
+
+    console.log('[[connected]]');
 
     var initChannel = '';
     if (!io.isConnected) {

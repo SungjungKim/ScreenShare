@@ -1,4 +1,4 @@
-var conference = function(config) {
+var dualrtc = function(config) {
     var self = {
             userToken: uniqueToken()
         },
@@ -11,6 +11,8 @@ var conference = function(config) {
     var sockets = [];
 
     function openDefaultSocket() {
+        console.log('1');
+
         defaultSocket = config.openSocket({
             onmessage: defaultSocketResponse,
             callback: function(socket) {
@@ -20,6 +22,7 @@ var conference = function(config) {
     }
 
     function defaultSocketResponse(response) {
+        console.log('2');
         if (response.userToken == self.userToken) return;
 
         if (isGetNewRoom && response.roomToken && response.broadcaster) config.onRoomFound(response);
@@ -37,17 +40,23 @@ var conference = function(config) {
     }
 
     function openSubSocket(_config) {
+        console.log('3');
+
         if (!_config.channel) return;
         var socketConfig = {
             channel: _config.channel,
             onmessage: socketResponse,
             onopen: function() {
+                console.log('4');
+
                 if (isofferer && !peer) initPeer();
                 sockets[sockets.length] = socket;
             }
         };
 
         socketConfig.callback = function(_socket) {
+            console.log('4');
+
             socket = _socket;
             this.onopen();
         };
@@ -61,6 +70,8 @@ var conference = function(config) {
 
         var peerConfig = {
             oniceconnectionstatechange: function(p) {
+                console.log('5');
+
                 if(!isofferer || peer.firedOnce) return;
 
                 if(p.iceConnectionState == 'failed') {
@@ -75,6 +86,8 @@ var conference = function(config) {
             },
             attachStream: config.attachStream,
             onICE: function(candidate) {
+                console.log('6');
+
                 socket && socket.send({
                     userToken: self.userToken,
                     candidate: {
@@ -84,6 +97,8 @@ var conference = function(config) {
                 });
             },
             onRemoteStream: function(stream) {
+                console.log('7');
+
                 htmlElement[moz ? 'mozSrcObject' : 'src'] = moz ? stream : webkitURL.createObjectURL(stream);
                 htmlElement.play();
 
@@ -93,6 +108,8 @@ var conference = function(config) {
         };
 
         function initPeer(offerSDP) {
+            console.log('8');
+
             if (!offerSDP) peerConfig.onOfferSDP = sendsdp;
             else {
                 peerConfig.offerSDP = offerSDP;
@@ -102,6 +119,8 @@ var conference = function(config) {
         }
 
         function afterRemoteStreamStartedFlowing() {
+            console.log('9');
+
             gotstream = true;
 
             config.onRemoteStream({
@@ -113,6 +132,8 @@ var conference = function(config) {
         }
 
         function sendsdp(sdp) {
+            console.log('10');
+
             sdp = JSON.stringify(sdp);
             var part = parseInt(sdp.length / 3);
 
@@ -142,6 +163,8 @@ var conference = function(config) {
         }
 
         function socketResponse(response) {
+            console.log('11');
+
             if (response.userToken == self.userToken) return;
             if (response.firstPart || response.secondPart || response.thirdPart) {
                 if (response.firstPart) {
@@ -180,6 +203,8 @@ var conference = function(config) {
         var invokedOnce = false;
 
         function selfInvoker() {
+            console.log('12');
+
             if (invokedOnce) return;
 
             invokedOnce = true;
@@ -194,6 +219,8 @@ var conference = function(config) {
     }
 
     function leave() {
+        console.log('13');
+
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -219,15 +246,21 @@ var conference = function(config) {
     }
 
     window.addEventListener('beforeunload', function() {
+        console.log('116,');
+
         leave();
     }, false);
 
     window.addEventListener('keyup', function(e) {
+        console.log('116');
+
         if (e.keyCode == 116)
             leave();
     }, false);
 
     function startBroadcasting() {
+        console.log('14');
+
         defaultSocket && defaultSocket.send({
             roomToken: self.roomToken,
             roomName: self.roomName,
@@ -237,6 +270,8 @@ var conference = function(config) {
     }
 
     function onNewParticipant(channel) {
+        console.log('15');
+
         if (!channel || channels.indexOf(channel) != -1 || channel == self.userToken) return;
         channels += channel + '--';
 
@@ -255,12 +290,16 @@ var conference = function(config) {
     }
 
     function uniqueToken() {
+        console.log('16');
+
         return Math.random().toString(36).substr(2, 35);
     }
 
     openDefaultSocket();
     return {
         createRoom: function(_config) {
+            console.log('17');
+
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
 
@@ -269,6 +308,8 @@ var conference = function(config) {
             startBroadcasting();
         },
         joinRoom: function(_config) {
+            console.log('18');
+
             self.roomToken = _config.roomToken;
             isGetNewRoom = false;
 
