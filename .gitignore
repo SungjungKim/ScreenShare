@@ -35,3 +35,6 @@ key/
 
 # nginx log
 log/
+
+# idea
+.idea/
