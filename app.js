@@ -1,15 +1,14 @@
 var express = require('express');
 var app = express();
 var fs = require('fs');
-var config = require('./js/config');
+var config = require('./src/js/config');
 var server;
-
 
 if (config.ws.secured) { // HTTPS
     var https = require('https');
     var options = {
-        key: fs.readFileSync('./key/key.pem', 'utf8'),
-        cert: fs.readFileSync('./key/cert.pem', 'utf8')
+        key: fs.readFileSync('key/key.pem', 'utf8'),
+        cert: fs.readFileSync('key/cert.pem', 'utf8')
     };
     var securePort = config.ws.securePort;
 
@@ -90,31 +89,31 @@ function onNewNamespace(channel, sender) {
 
 // Handle resource request by server
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc.html');
+    res.sendFile(__dirname + '/dist/dualrtc.html');
 });
 
-app.get('/dualrtc.html', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc.html');
+app.get('/dist/dualrtc.html', function(req, res) {
+    res.sendFile(__dirname + '/dist/dualrtc.html');
 });
 
-app.get('/js/jquery-2.1.4.min.js', function(req, res) {
-    res.sendFile(__dirname + '/js/jquery-2.1.4.min.js');
+app.get('/dist/js/jquery-2.1.4.min.js', function(req, res) {
+    res.sendFile(__dirname + '/dist/js/jquery-2.1.4.min.js');
 });
 
-app.get('/dualrtc/adapter.js', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc/adapter.js');
+app.get('/dist/js/adapter.js', function(req, res) {
+    res.sendFile(__dirname + '/dist/js/adapter.js');
 });
 
-app.get('/dualrtc/dualrtc.js', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc/dualrtc.js');
+app.get('/dist/js/dualrtc.js', function(req, res) {
+    res.sendFile(__dirname + '/dist/js/dualrtc.js');
 });
 
-app.get('/dualrtc/screenShare.js', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc/screenShare.js');
+app.get('/dist/js/screenShare.js', function(req, res) {
+    res.sendFile(__dirname + '/dist/js/screenShare.js');
 });
 
-app.get('/dualrtc/detectrtc.js', function(req, res) {
-    res.sendFile(__dirname + '/dualrtc/detectrtc.js');
+app.get('/dist/js/detectrtc.js', function(req, res) {
+    res.sendFile(__dirname + '/dist/js/detectrtc.js');
 });
 
 app.use(express.static('.'));
