@@ -1,8 +1,4 @@
-//////////////////////////////////////////////////////////////////
-//
-//                DualRTC User Defined code
-//
-/////////////////////////////////////////////////////////////////
+'use strict';
 
 var SIGNALING_SERVER = 'https://112.108.40.152:443/';
 
@@ -65,48 +61,20 @@ var config = {
         video.setAttribute('controls', true);
         videosContainer.insertBefore(video, videosContainer.firstChild);
         video.play();
-        rotateVideo(video);
+        //rotateVideo(video);
     },
     onRoomFound: function(room) {
         console.log('s5');
 
-        if(location.hash.replace('#', '').length) {
-            // private rooms should auto be joined.
-            conferenceUI.joinRoom({
-                roomToken: room.roomToken,
-                joinUser: room.broadcaster
-            });
-            return;
-        }
-
-        var alreadyExist = document.getElementById(room.broadcaster);
-        if (alreadyExist) return;
-        if (typeof roomsList === 'undefined') roomsList = document.body;
-        var tr = document.createElement('tr');
-        tr.setAttribute('id', room.broadcaster);
-        tr.innerHTML = '<td>' + room.roomName + '</td>' +
-            '<td><button class="join" id="' + room.roomToken + '">Open Screen</button></td>';
-        roomsList.insertBefore(tr, roomsList.firstChild);
-        var button = tr.querySelector('.join');
-        button.onclick = function() {
-            console.log('s6');
-
-            var button = this;
-            button.disabled = true;
-            conferenceUI.joinRoom({
-                roomToken: button.id,
-                joinUser: button.parentNode.parentNode.id
-            });
-        };
+        dualrtcUI.joinRoom({
+            roomToken: room.broadcaster,
+            joinUser: room.broadcaster
+        });
     },
     onNewParticipant: function(numberOfParticipants) {
         console.log('s7');
 
         document.title = numberOfParticipants + ' users are viewing your screen!';
-        var element = document.getElementById('number-of-participants');
-        if (element) {
-            element.innerHTML = numberOfParticipants + ' users are viewing your screen!';
-        }
     },
     oniceconnectionstatechange: function(state) {
         console.log('s8');
@@ -162,7 +130,6 @@ function captureUserMedia(callback, extensionAvailable) {
         return;
     }
 
-    // for non-www.webrtc-experiment.com domains
     if(isChrome && !DetectRTC.screen.sourceId) {
         window.addEventListener('message', function (event) {
             console.log('s12');
@@ -182,7 +149,6 @@ function captureUserMedia(callback, extensionAvailable) {
                 captureUserMedia(callback, true);
             }
         });
-        screenFrame.postMessage();
         return;
     }
 
@@ -222,7 +188,7 @@ function captureUserMedia(callback, extensionAvailable) {
             config.attachStream = stream;
             callback && callback();
             video.setAttribute('muted', true);
-            rotateVideo(video);
+            //rotateVideo(video);
         },
         onerror: function() {
             console.log('s14');
@@ -239,29 +205,31 @@ function captureUserMedia(callback, extensionAvailable) {
     });
 } // end of captureUserMedia
 
-
-
-/* on page load: get public rooms */
-var conferenceUI = dualrtc(config);
-
-
-
+var dualrtcUI = dualrtc(config);
 var videosContainer = document.getElementById("videos-container") || document.body;
-var roomsList = document.getElementById('rooms-list');
-document.getElementById('share-screen').onclick = function() {
-    console.log('s15');
 
+$('#share-screen').click(function () {
     var roomName = document.getElementById('room-name') || { };
     roomName.disabled = true;
     captureUserMedia(function() {
-        console.log('s16');
-
-        conferenceUI.createRoom({
+        dualrtcUI.createRoom({
             roomName: (roomName.value || 'Anonymous') + ' shared his screen with you'
         });
     });
     this.disabled = true;
-};
+});
+
+//document.getElementById('share-screen').onclick = function() {
+//    var roomName = document.getElementById('room-name') || { };
+//    roomName.disabled = true;
+//    captureUserMedia(function() {
+//        conferenceUI.createRoom({
+//            roomName: (roomName.value || 'Anonymous') + ' shared his screen with you'
+//        });
+//    });
+//    this.disabled = true;
+//};
+
 function rotateVideo(video) {
     console.log('s17');
 
@@ -273,10 +241,7 @@ function rotateVideo(video) {
     }, 1000);
 }
 
-
 (function() {
-    console.log('s19');
-
     var uniqueToken = document.getElementById('unique-token');
     if (uniqueToken)
         if (location.hash.length > 2) uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center;"><a href="' + location.href + '" target="_blank">Share this link</a></h2>';

@@ -1,3 +1,5 @@
+'use strict';
+
 var dualrtc = function(config) {
     var self = {
             userToken: uniqueToken()
@@ -6,6 +8,7 @@ var dualrtc = function(config) {
         isbroadcaster,
         isGetNewRoom = true,
         participants = 0,
+        num_rooms = 1,
         defaultSocket = {};
 
     var sockets = [];
@@ -303,6 +306,7 @@ var dualrtc = function(config) {
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
 
+            num_rooms++;
             isbroadcaster = true;
             isGetNewRoom = false;
             startBroadcasting();

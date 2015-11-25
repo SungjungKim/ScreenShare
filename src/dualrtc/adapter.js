@@ -18,7 +18,6 @@ var iceServers = function() {
     };
 }
 
-
 window.moz = !!navigator.mozGetUserMedia;
 
 function RTCPeerConnection(options) {
@@ -128,8 +127,9 @@ function RTCPeerConnection(options) {
         // removing existing bandwidth lines
         sdp = sdp.replace(/b=AS([^\r\n]+\r\n)/g, '');
 
-        // "300kbit/s" for screen sharing
-        sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:300\r\n');
+        // "10000kbit/s" for screen sharing
+        sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:200000\r\n');
+        //sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:500\r\n');
 
         return sdp;
     }
@@ -183,11 +183,10 @@ var video_constraints = {
 function getUserMedia(options) {
     console.log('a14');
 
-    var n = navigator,
-        media;
+    var n = navigator, media;
     n.getMedia = n.webkitGetUserMedia || n.mozGetUserMedia;
     n.getMedia(options.constraints || {
-            audio: true,
+            audio: false,
             video: video_constraints
         }, streaming, options.onerror || function (e) {
             console.log('a15');
